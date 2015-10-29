@@ -1,4 +1,4 @@
-package scalautils
+package scalautils.devel
 
 /**
  * Document me!
