@@ -1,7 +1,7 @@
 package scalautils
 
 /**
-  * Document me!
+  * Utilities to ease the integration of bash into scala-programs
   *
   * @author Holger Brandl
   */
@@ -17,7 +17,6 @@ import scala.sys.process._
   * sbt version of it
   * http://www.scala-sbt.org/0.13/docs/Process.html
   */
-// todo move to scalautils
 // todo add implicit to allow for """find | grep sdf >test.df"""bash
 object Bash {
 
@@ -77,7 +76,7 @@ object Bash {
 
 
 //todo convert into unit tests
-package object test {
+object test {
 
   import scalautils.Bash._
 
@@ -94,11 +93,9 @@ package object test {
 }
 
 
-package object debug {
-
+object debug {
   import scalautils.Bash._
 
-  // join list using using folding
   //http://oldfashionedsoftware.com/2009/07/10/scala-code-review-foldleft-and-foldright/
   List("/bin/bash", "-c", s"'kaka'").foldLeft("")((b, a) => b + " " + a).trim
 
@@ -124,10 +121,4 @@ package object debug {
   // Process("cat temp.txt")!
 
   eval("om $(pwd)")
-
-  // killing jobs
-  eval("om " + TxDataFetcher.txTable.getParent)
-
-  eval("om " + TxDataFetcher.txTable.getParent)
-
 }
