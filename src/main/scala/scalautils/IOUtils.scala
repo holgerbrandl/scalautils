@@ -23,7 +23,7 @@ object IOUtils {
   }
 
 
-  def saveAs(f: File, lines: Seq[String]) = saveAs(f) { p => lines.foreach(p.println) }
+  def saveAs(f: File, lines: Seq[String]): Unit = saveAs(f) { p => lines.foreach(p.println) }
 
 
   /** Also consider sbt solution
