@@ -21,6 +21,8 @@ import scala.sys.process._
 object Bash {
 
 
+  case class BashMode(beVerbose: Boolean = false, dryRun: Boolean = false)
+
   import sys.process._
 
   // notes must be different since otherwise eval's would share the same base-signature
@@ -33,9 +35,9 @@ object Bash {
 
   // http://stackoverflow.com/questions/15411728/scala-process-capture-standard-out-and-exit-code
   // http://stackoverflow.com/questions/5221524/idiomatic-way-to-convert-an-inputstream-to-a-string-in-scala
-  def evalCapture(script: String, showScript: Boolean = true) = {
+  def evalCapture(script: String)(implicit mode: BashMode = BashMode()): BashResult = {
 
-    if (showScript) println("script:\n" + script.trim)
+    if (mode.beVerbose) println("script:\n" + script.trim)
 
     //    ("/bin/ls /tmp" run BasicIO(false, None, None)).exitValue
 
@@ -54,15 +56,21 @@ object Bash {
       })
 
 
+    if (mode.dryRun)
+      return null
+
     //    BashResult(f"$script".run(io).exitValue(), out, err)
     BashResult(Seq("/bin/bash", "-c", s"$script").run(io).exitValue(), out, err)
   }
 
 
-  def eval(script: String, logBase: String = null, showScript: Boolean = true): Int = {
+  def eval(script: String, logBase: String = null)(implicit mode: BashMode = BashMode()): Int = {
     val logger = if (logBase != null) s"1> $logBase.out.log 2>$logBase.err.log".split(" ")
 
-    if (showScript) println("script:\n" + script.trim)
+    if (mode.beVerbose) println("script:\n" + script.trim)
+
+    if (mode.dryRun)
+      return 1000
 
     Seq("/bin/bash", "-c", s"$script").!
     //    Seq("/bin/bash", "-c", "echo lala").!
