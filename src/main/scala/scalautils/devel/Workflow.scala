@@ -1,6 +1,6 @@
-import better.files.{File, _}
+package scalautils.devel
 
-import scalautils.Bash
+import better.files.File
 
 /**
   * Document me!
@@ -54,41 +54,3 @@ object Workflow extends App {
 }
 
 
-object snippets extends App {
-
-
-  trait SnippetEvaluator {
-
-    def eval(bashSnippet: BashSnippet)
-  }
-
-
-  class ShellEvaluator extends SnippetEvaluator {
-
-    override def eval(bashSnippet: BashSnippet): Unit = {
-      val status = Bash.eval(bashSnippet.cmd)
-      println(status)
-    }
-  }
-
-
-  class BsubExecutor() extends SnippetEvaluator {
-
-    override def eval(bashSnippet: BashSnippet): Unit = ???
-  }
-
-
-  case class BashSnippet(cmd: String) {
-
-    def inDir(wd: File) = new BashSnippet(s"cd ${wd.path}\n" + cmd)
-
-
-    def eval(implicit snippetEvaluator: SnippetEvaluator = new ShellEvaluator()) = {
-      snippetEvaluator.eval(this)
-    }
-  }
-
-
-  new BashSnippet("echo hello world $(pwd)").inDir(home / "Desktop").eval
-
-}

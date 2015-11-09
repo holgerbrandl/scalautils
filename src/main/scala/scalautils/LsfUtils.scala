@@ -1,5 +1,7 @@
 package scalautils
 
+import scalautils.Tasks.JobList
+
 /**
   * A scala reimplemenation of  https://raw.githubusercontent.com/holgerbrandl/datautils/master/bash/lsf_utils.sh
   *
@@ -14,7 +16,7 @@ object LsfUtils {
   }
 
 
-  def bsub(name: String, cmd: String, joblist: String = ".jobs", numCores: Int = 1, queue: String = "short", otherArgs: String = "", workingDirectory: java.io.File = null) = {
+  def bsub(name: String, cmd: String, joblist: JobList = new JobList(".jobs"), numCores: Int = 1, queue: String = "short", otherArgs: String = "", workingDirectory: java.io.File = null) = {
     val threadArg = if (numCores > 1) s"-R span[hosts=1] -n $numCores" else ""
 
     val job = s"""${changeWdOptional(workingDirectory)} mysub $name "$cmd" -q $queue $threadArg $otherArgs| joblist $joblist"""
