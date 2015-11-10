@@ -53,7 +53,7 @@ package object FastaUtils {
       IOUtils.saveAs(nextChunkFile.toJava) { p => chunk.foreach(record => p.append(record.toEntryString)) }
 
       nextChunkFile
-    })
+    }).toIndexedSeq //
   }
 
   /** From http://codeaffectionate.blogspot.de/2013/05/reading-fasta-files-with-scala.html */

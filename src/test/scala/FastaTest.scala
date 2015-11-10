@@ -1,4 +1,4 @@
-import better.files.File
+import better.files._
 import org.scalatest.{FlatSpec, Matchers}
 
 import scalautils.FastaUtils._
@@ -9,13 +9,15 @@ class FastaTest extends FlatSpec with Matchers {
 
   it should "create some fasta chunks from a source fasta " in {
 
-    val wd = File("/Volumes/home/brandl/test/")
+
+    val wd = (home / "unit_tests").createIfNotExists(true)
 
     // clean up previous chunks
     wd.glob("**/test_chunk*").foreach(_.delete())
 
     // val testFasta = File("/projects/plantx/on_plantx/dd_Jani_v4/dd_Jani_v4.dircor.fasta").copyTo(wd/"some_seqs.fasta")
-    val testFasta = wd / "some_seqs.fasta"
+    val testFasta = File(getClass.getResource("/bio/some_seqs.fasta").getFile) //http://stackoverflow.com/questions/5285898/how-to-access-test-resources
+    //    val testFasta = wd / "some_seqs.fasta"
 
 
     //    val fastaRecords = readFasta(testFasta)
