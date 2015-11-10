@@ -19,7 +19,7 @@ class FastaTest extends FlatSpec with Matchers {
 
 
     //    val fastaRecords = readFasta(testFasta)
-    createChunks(openFasta(testFasta), 50, new SimpleChunkNamer(baseDir = wd, prefix = "test_chunk_"))
+    val chunks = createChunks(openFasta(testFasta), 50, new SimpleChunkNamer(baseDir = wd, prefix = "test_chunk_"))
 
     wd.glob("**/test_chunk*").size should be > 0
 

@@ -44,13 +44,15 @@ package object FastaUtils {
   /** Inspired by http://stackoverflow.com/questions/7459174/split-list-into-multiple-lists-with-fixed-number-of-elements. */
   def createChunks(fastaIt: Iterator[FastaRecord], chunkSize: Int, namer: ChunkNamer = new SimpleChunkNamer()) = {
 
-    fastaIt.grouped(chunkSize).foreach(chunk => {
+    fastaIt.grouped(chunkSize).map(chunk => {
       val nextChunkFile = namer.getNext
       if (!nextChunkFile.parent.exists) nextChunkFile.parent.createDirectory()
 
       assume(!nextChunkFile.exists) // make sure that we do not override existing chunk files
 
       IOUtils.saveAs(nextChunkFile.toJava) { p => chunk.foreach(record => p.append(record.toEntryString)) }
+
+      nextChunkFile
     })
   }
 
