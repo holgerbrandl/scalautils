@@ -2,6 +2,8 @@ package scalautils
 
 import java.io.File
 
+import scala.language.implicitConversions
+
 
 /**
   * Document me!
@@ -33,6 +35,50 @@ object IOUtils {
     IO.writeLines(file1, lines)
 
     */
+
+
+  /** implicit conversion rules. To use them do   import de.mpicbg.rink.plantx.FileUtils._ */
+  object FileUtils {
+
+
+    implicit class FileApiImplicits(file: File) {
+
+      def mkdirOptional = {
+        if (!file.isDirectory) file.mkdir()
+        file
+      }
+    }
+
+
+    implicit def string2file(s: String): File = new File(s)
+
+
+    implicit def file2string(s: String): String = s.getAbsolutePath
+
+  }
+
+
+  /** implicit conversion rules. To use them do   import de.mpicbg.rink.plantx.FileUtils._ */
+  object BetterFileUtils {
+
+
+    implicit class FileApiImplicits(file: better.files.File) {
+
+      def mkdirOptional = {
+        if (!file.isDirectory) file.createDirectory()
+        file
+      }
+    }
+
+
+    implicit def string2file(s: String): File = new File(s)
+
+
+    implicit def file2string(s: String): String = s.getAbsolutePath
+
+  }
+
+
 }
 
 

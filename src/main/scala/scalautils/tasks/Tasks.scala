@@ -1,6 +1,8 @@
-package scalautils
+package scalautils.tasks
 
 import better.files._
+
+import scalautils.Bash
 
 /**
   * Slim layer around bsub & friends
@@ -26,6 +28,10 @@ object Tasks extends App {
 
 
   case class JobList(file: File = File(".joblist")) extends AnyRef {
+
+
+    def waitUntilDone(msg: String = "") = LsfUtils.wait4jobs(this.file, msg)
+
 
     def this(name: String) = this(File(name))
   }

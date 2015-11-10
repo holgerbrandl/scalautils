@@ -1,7 +1,8 @@
 import better.files._
 
 import scalautils.Bash.BashMode
-import scalautils.Tasks.{BashSnippet, LsfExecutor, StringOps}
+import scalautils.tasks.Tasks
+import scalautils.tasks.Tasks.{BashSnippet, JobList, LsfExecutor, StringOps}
 
 /**
   * Document me!
@@ -29,4 +30,12 @@ object TestTasks extends App {
   snippet.withName("hello").eval(new LsfExecutor())
 
   "sdfsdf".toBash.eval
+
+  implicit val jobRunner = LsfExecutor(queue = "short", joblist = JobList(home / "Desktop/"))
+  "sleep 300".toBash.eval
+
+  jobRunner.joblist.waitUntilDone()
+
+
+  private val failedJobs = jobRunner.joblist.failed
 }
