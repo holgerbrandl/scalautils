@@ -16,7 +16,7 @@ package object FastaUtils {
   case class FastaRecord(id: String, description: Option[String] = None, sequence: String) {
 
     // inspired from see https://github.com/agjacome/funpep
-    lazy val toEntryString: String = ">" + id + " " + description.getOrElse("") + "\n" + sequence.grouped(70).mkString("\n")
+    lazy val toEntryString: String = ">" + id + " " + description.getOrElse("") + "\n" + sequence.grouped(70).mkString("\n") + "\n"
 
     // also interesting
     // see http://stackoverflow.com/questions/10530102/java-parse-string-and-add-line-break-every-100-characters
@@ -90,11 +90,13 @@ package object FastaUtils {
         if (!reader.ready || line(0) == '>') {
           // Reached the end of the sequence
           if (reader.ready) reader.reset()
-          // Remove prepending '>'
-          val desc = tag.drop(1).trim
-          val id = desc.split(Array(' ', '\t'))(0)
 
-          return FastaRecord(id, Some(desc), sequencelist)
+          // Remove prepending '>' and separate header from id
+          val splitRecHeader = tag.drop(1).trim.split(Array(' ', '\t'))
+          val id = splitRecHeader(0)
+          val desc = if (splitRecHeader.length == 2) Some(splitRecHeader(1)) else None
+
+          return FastaRecord(id, desc, sequencelist)
         }
       } while (reader.ready)
       // should never reach this...
