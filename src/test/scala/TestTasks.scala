@@ -1,7 +1,6 @@
 import better.files._
 
 import scalautils.Bash.BashMode
-import scalautils.tasks.Tasks
 import scalautils.tasks.Tasks.{BashSnippet, JobList, LsfExecutor, StringOps}
 
 /**
@@ -37,5 +36,5 @@ object TestTasks extends App {
   jobRunner.joblist.waitUntilDone()
 
 
-  private val failedJobs = jobRunner.joblist.failed
+  private val failedJobs = jobRunner.joblist
 }
