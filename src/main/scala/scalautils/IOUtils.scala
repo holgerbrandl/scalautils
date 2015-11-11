@@ -12,9 +12,12 @@ import scala.language.implicitConversions
   */
 object IOUtils {
 
+  def saveAs(fileName: String) = saveAs(new File(fileName))
+
   // see http://stackoverflow.com/questions/4604237/how-to-write-to-a-file-in-scala
   //  http://stackoverflow.com/questions/6879427/scala-write-string-to-file-in-one-statement
   // similar http://jesseeichar.github.io/scala-io-doc/0.2.0/index.html#!/core/multiple_writes_single_connection
+
   def saveAs(f: java.io.File)(op: java.io.PrintWriter => Unit) {
     val p = new java.io.PrintWriter(f)
     try {

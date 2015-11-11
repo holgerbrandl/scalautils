@@ -1,5 +1,8 @@
-import java.io.File
+
+import better.files.File
+
 import scalautils.Bash._
+import scalautils.tasks.Tasks.BashSnippet
 
 // todo convert into actual unit tests.
 /**
@@ -27,8 +30,8 @@ object TestBashEval {
 
 object BashPlayground {
 
-  import sys.process._
   import scala.language.postfixOps
+  import sys.process._
 
   //http://oldfashionedsoftware.com/2009/07/10/scala-code-review-foldleft-and-foldright/
   List("/bin/bash", "-c", s"'kaka'").foldLeft("")((b, a) => b + " " + a).trim
@@ -45,6 +48,10 @@ object BashPlayground {
   R("1+1")
 
   head(new File("/home/brandl/.bash_profile"))
+
+  BashSnippet("touch").name
+  BashSnippet("touch").withAutoName
+  BashSnippet("touch").inDir(File("test")).cmd
 
 
   //import scala.sys.process._

@@ -19,7 +19,10 @@ case class JobList(file: File = File(".joblist")) extends AnyRef {
 
 
   def failed = {
-    val killedJobs = File(file.fullPath + ".killed_jobs.txt").lines.map(_.toInt)
+    val killedListFile = File(file.fullPath + ".killed_jobs.txt")
+    require(killedListFile.isRegularFile)
+
+    val killedJobs = killedListFile.lines.map(_.toInt)
 
     // find cmd-logs of killed jobs
     val isKilled: (File) => Boolean = jobIdFile => killedJobs.contains(jobIdFile.lines.mkString.toInt) // predicate function

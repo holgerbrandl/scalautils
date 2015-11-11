@@ -17,7 +17,7 @@ object Tasks extends App {
 
   abstract class SnippetExecutor {
 
-    def eval(bashSnippet: BashSnippet)
+    def eval(bashSnippet: BashSnippet): Unit
 
 
     def eval(tasks: Iterable[BashSnippet]) = {
@@ -71,16 +71,29 @@ object Tasks extends App {
   }
 
 
-  case class BashSnippet(cmd: String, name: String = "") {
-
-    def name_ = if (this.name.isEmpty) "snippet_" + cmd.hashCode.toString else this.name
+  case class BashSnippet(cmd: String, name: String = "", wd: File = File(".")) {
 
 
     //http://stackoverflow.com/questions/7249396/how-to-clone-a-case-class-instance-and-change-just-one-field-in-scala
     def withName(name: String): BashSnippet = this.copy(name = name)
 
 
-    def inDir(wd: File) = this.copy(cmd = s"cd ${wd.path}\n" + cmd)
+    def withAutoName: BashSnippet = {
+      this.copy(name = Seq(wd.parent.parent, wd.parent, cmd.hashCode.toString).mkString("__"))
+    }
+
+
+    def inDir(wd: File) = {
+
+      // trim first line if it's cd statement
+      var splitCmd = this.cmd.split("\n")
+      if (splitCmd.head.contains("## change into wd")) {
+        splitCmd = splitCmd.drop(1)
+      }
+      val trimmedCmd = splitCmd.mkString("\n")
+
+      this.copy(cmd = s"cd ${wd.path} ## change into wd\n" + trimmedCmd, wd = wd)
+    }
 
 
     def eval(implicit snippetEvaluator: SnippetExecutor = new LocalShell()) = {
@@ -93,10 +106,4 @@ object Tasks extends App {
 
     def toBash: BashSnippet = BashSnippet(str)
   }
-
-
 }
-
-
-
-
