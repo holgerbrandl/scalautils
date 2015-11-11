@@ -3,7 +3,6 @@ package scalautils.tasks
 import better.files.File
 
 import scalautils.Bash
-import scalautils.tasks.Tasks.JobList
 
 /**
   * A scala reimplemenation of  https://raw.githubusercontent.com/holgerbrandl/datautils/master/bash/lsf_utils.sh
@@ -11,6 +10,7 @@ import scalautils.tasks.Tasks.JobList
   * @author Holger Brandl
   */
 object LsfUtils {
+
 
   def wait4jobs(joblist: File = File(".jobs"), msg: String) = {
     Bash.eval( s"""${changeWdOptional(joblist.parent)} wait4jobs $joblist""")

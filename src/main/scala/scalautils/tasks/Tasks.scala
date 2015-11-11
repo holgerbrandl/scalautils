@@ -1,7 +1,10 @@
 package scalautils.tasks
 
+import java.util.concurrent.Executors
+
 import better.files._
 
+import scala.concurrent.ExecutionContext
 import scalautils.Bash
 
 /**
@@ -12,9 +15,14 @@ import scalautils.Bash
 object Tasks extends App {
 
 
-  trait SnippetExecutor {
+  abstract class SnippetExecutor {
 
     def eval(bashSnippet: BashSnippet)
+
+
+    def eval(tasks: Iterable[BashSnippet]) = {
+      tasks.foreach(_.eval(this))
+    }
   }
 
 
@@ -24,24 +32,37 @@ object Tasks extends App {
       val status = Bash.eval(bashSnippet.cmd)
       println(status)
     }
+
+
+    def eval(tasks: Iterable[BashSnippet], numThreads: Int = Runtime.getRuntime.availableProcessors()): Unit = {
+      implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(numThreads))
+
+      tasks.par.foreach(_.eval(this))
+    }
   }
 
 
-  case class JobList(file: File = File(".joblist")) extends AnyRef {
+  class DryRunExecutor extends SnippetExecutor {
 
-
-    def waitUntilDone(msg: String = "") = LsfUtils.wait4jobs(this.file, msg)
-
-
-    def this(name: String) = this(File(name))
+    override def eval(bashSnippet: BashSnippet): Unit = {
+      println(s"---running: ${bashSnippet.name} ---")
+      println(bashSnippet.cmd)
+      println("----------------")
+    }
   }
 
 
-  case class LsfExecutor(numThreads: Int = 1, queue: String = "medium",
+  case class LsfExecutor(numThreads: Int = 1, queue: String = "short",
                          joblist: JobList = JobList(), wd: File = null) extends SnippetExecutor {
 
     // more r like default would be http://stackoverflow.com/questions/3090753/is-it-possible-for-an-optional-argument-value-to-depend-on-another-argument-in-s
     def wd_ = if (wd != null) wd else joblist.file.parent
+
+
+    override def eval(tasks: Iterable[BashSnippet]): Unit = {
+      super.eval(tasks)
+      joblist.waitUntilDone()
+    }
 
 
     override def eval(bashSnippet: BashSnippet): Unit = {
@@ -52,7 +73,7 @@ object Tasks extends App {
 
   case class BashSnippet(cmd: String, name: String = "") {
 
-    def name_ = if (this.name.isEmpty) cmd.hashCode.toString else this.name
+    def name_ = if (this.name.isEmpty) "snippet_" + cmd.hashCode.toString else this.name
 
 
     //http://stackoverflow.com/questions/7249396/how-to-clone-a-case-class-instance-and-change-just-one-field-in-scala
@@ -63,7 +84,6 @@ object Tasks extends App {
 
 
     def eval(implicit snippetEvaluator: SnippetExecutor = new LocalShell()) = {
-      println(s"using ${snippetEvaluator.getClass.getName}")
       snippetEvaluator.eval(this)
     }
   }
@@ -76,5 +96,7 @@ object Tasks extends App {
 
 
 }
+
+
 
 

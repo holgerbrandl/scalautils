@@ -4,6 +4,8 @@ import java.io.{BufferedReader, File => JFile, FileReader}
 
 import better.files.File
 
+import scala.collection.mutable.ListBuffer
+
 
 /**
   * Document me!
@@ -29,7 +31,8 @@ package object FastaUtils {
   }
 
 
-  class SimpleChunkNamer(baseDir: File = File("fasta_chunks"), prefix: String = "chunk_") extends ChunkNamer {
+  case class SimpleChunkNamer(baseDir: File = File("fasta_chunks"), prefix: String = "chunk_") extends ChunkNamer {
+
 
     var chunkCounter = 0
 
@@ -37,6 +40,23 @@ package object FastaUtils {
     def getNext: File = {
       chunkCounter = chunkCounter + 1
       baseDir / (prefix + chunkCounter + ".fasta")
+    }
+
+
+    /**
+      * List existing chunks
+      */
+    def list = {
+      val copyNamer = this.copy()
+      var chunkFile = copyNamer.getNext
+
+      var chunks = new ListBuffer[File]
+      while (chunkFile.exists) {
+        chunks += chunkFile
+        chunkFile = copyNamer.getNext
+      }
+
+      chunks
     }
   }
 
@@ -50,11 +70,17 @@ package object FastaUtils {
 
       assume(!nextChunkFile.exists) // make sure that we do not override existing chunk files
 
-      IOUtils.saveAs(nextChunkFile.toJava) { p => chunk.foreach(record => p.append(record.toEntryString)) }
+      writeFasta(chunk, nextChunkFile)
 
       nextChunkFile
     }).toIndexedSeq //
   }
+
+
+  def writeFasta(fastaRecords: Iterable[FastaRecord], outputFile: File): Unit = {
+    IOUtils.saveAs(outputFile.toJava) { p => fastaRecords.foreach(record => p.append(record.toEntryString)) }
+  }
+
 
   /** From http://codeaffectionate.blogspot.de/2013/05/reading-fasta-files-with-scala.html */
   def readFasta(fastaFile: File): Seq[FastaRecord] = {
