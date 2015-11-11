@@ -14,6 +14,9 @@ object IOUtils {
 
   def saveAs(fileName: String) = saveAs(new File(fileName))
 
+
+  def saveAs(file: better.files.File) = saveAs(file.toJava)
+
   // see http://stackoverflow.com/questions/4604237/how-to-write-to-a-file-in-scala
   //  http://stackoverflow.com/questions/6879427/scala-write-string-to-file-in-one-statement
   // similar http://jesseeichar.github.io/scala-io-doc/0.2.0/index.html#!/core/multiple_writes_single_connection

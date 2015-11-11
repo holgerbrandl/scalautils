@@ -15,7 +15,7 @@ object StringUtils {
   implicit class ImplStringUtils(s: String) {
 
     ///http://stackoverflow.com/a/6061104/590437
-    def stripLeadingWS = s.split("\n").map(_.trim).mkString("\n")
+    def stripLeadingWS = s.split("\n").map(_.trim).mkString("\n").trim
   }
 
 

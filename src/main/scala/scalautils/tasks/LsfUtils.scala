@@ -13,7 +13,7 @@ object LsfUtils {
 
 
   def wait4jobs(joblist: File = File(".jobs"), msg: String) = {
-    Bash.eval( s"""${changeWdOptional(joblist.parent)} wait4jobs $joblist""")
+    Bash.eval(s"""${changeWdOptional(joblist.parent)} wait4jobsReport $joblist""")
 
     if (msg != null) Bash.eval(s"mailme $msg")
   }
@@ -32,4 +32,22 @@ object LsfUtils {
   private def changeWdOptional(wd: File): String = {
     if (wd != null && wd != File(".")) "cd " + wd.fullPath + "; " else ""
   }
+
+
+  def mailme(subject: String, body: String = "", logSubject: Boolean = true) = {
+    if (logSubject) Console.err.println(s"$subject")
+
+    //    val subject = "test"
+    //    val body = """
+    //    hello world
+    //    more content""".stripLeadingWS
+
+    Bash.eval(s"""echo -e 'Subject:$subject\n\n $body' | sendmail $$(whoami)@mpi-cbg.de > /dev/null""")
+  }
+}
+
+
+object test extends App {
+
+  scalautils.tasks.LsfUtils.mailme("test", "hallo holger")
 }

@@ -18,7 +18,7 @@ case class JobList(file: File = File(".joblist")) extends AnyRef {
   def waitUntilDone(msg: String = "") = LsfUtils.wait4jobs(this.file, msg)
 
 
-  def failed = {
+  def killed = {
     val killedListFile = File(file.fullPath + ".killed_jobs.txt")
     require(killedListFile.isRegularFile)
 
