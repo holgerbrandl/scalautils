@@ -5,7 +5,7 @@ package scalautils.tasks
   *
   * @author Holger Brandl
   */
-class LsfCLI extends App {
+object LsfCLI extends App {
 
   if (args.length == 0) {
     Console.err.println("Usage: lsf_cli [task] [args]*")
@@ -14,5 +14,8 @@ class LsfCLI extends App {
     // todo    print bash function definitions here
   }
 
+  //  How to run?
+  // sbt assembly
+  // java -cp /Users/brandl/Dropbox/cluster_sync/scalautils/target/scala-2.11/scalautils-assembly-0.1-SNAPSHOT.jar scalautils.tasks.LsfCLI
 
 }
