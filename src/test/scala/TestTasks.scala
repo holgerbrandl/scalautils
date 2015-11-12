@@ -10,7 +10,7 @@ import scalautils.tasks.Tasks.{BashSnippet, LsfExecutor, StringOps}
   *
   * @author Holger Brandl
   */
-object TestTasks extends FlatSpec with Matchers {
+class TestTasks extends FlatSpec with Matchers {
 
   //  import Matchers._
 
@@ -28,6 +28,7 @@ object TestTasks extends FlatSpec with Matchers {
     //    runner.eval(tasks)
     //    tasks.foreach(_.eval(runner))
     tasks.head.eval(runner)
+    runner.joblist.waitUntilDone()
 
     // make sure that outputs have been created
     (wd / ".logs").toJava should exist
@@ -48,7 +49,7 @@ object TestTasks extends FlatSpec with Matchers {
 
 class playground extends App {
 
-  BashSnippet(s"""sleep 60; echo "this is task 22" > task_22.txt """).inDir((home / "unit_tests")).withAutoName
+  BashSnippet(s"""sleep 60; echo "this is task 22" > task_22.txt """).inDir(root / "foo").inDir(home / "unit_tests").withAutoName
 
   val snippet = new BashSnippet("echo hello world $(pwd)").inDir(home / "Desktop")
   snippet.eval

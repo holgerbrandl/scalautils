@@ -66,8 +66,8 @@ object Tasks extends App {
 
 
     override def eval(bashSnippet: BashSnippet): Unit = {
-      Console.err.println(s"Submitting '${bashSnippet.withAutoName.name}' to '$queue'")
-      LsfUtils.bsub(bashSnippet.cmd, Some(bashSnippet.name), joblist = joblist)
+      val jobId = LsfUtils.bsub(bashSnippet.cmd, Some(bashSnippet.name), joblist = joblist, workingDirectory = bashSnippet.wd)
+      Console.err.println(s"Submitting '${bashSnippet.withAutoName.name}' to '$queue' with jobid '$jobId'")
     }
   }
 
@@ -88,12 +88,13 @@ object Tasks extends App {
 
       // trim first line if it's cd statement
       var splitCmd = this.cmd.split("\n")
-      if (splitCmd.head.contains("## change into wd")) {
+      val wdPostFix = "## lsfutils:change into wd"
+      if (splitCmd.head.contains(wdPostFix)) {
         splitCmd = splitCmd.drop(1)
       }
       val trimmedCmd = splitCmd.mkString("\n")
 
-      this.copy(cmd = s"cd ${wd.path} ## change into wd\n" + trimmedCmd, wd = wd)
+      this.copy(cmd = s"cd ${wd.path} $wdPostFix\n" + trimmedCmd, wd = wd)
     }
 
 

@@ -16,7 +16,7 @@ object LsfUtils {
 
 
   def wait4jobs(joblist: File = File(".jobs"), msg: String) = {
-    Bash.eval(s"""${changeWdOptional(joblist.parent)} wait4jobsReport ${joblist.fullPath}""")
+    Bash.eval(s"wait4jobsReport ${joblist.fullPath}")
 
     if (msg != null) Bash.eval(s"mailme $msg")
   }
@@ -33,7 +33,9 @@ object LsfUtils {
 
     val jobName = name.getOrElse(buildJobName(workingDirectory, cmd))
 
-    val job = s"""${changeWdOptional(workingDirectory)} mysub "$jobName" "$cmd" -q $queue $threadArg $otherArgs | joblist ${joblist.file.fullPath}"""
+    val job = s"""cd '${workingDirectory.fullPath}'; mysub "$jobName" '$cmd' -q $queue $threadArg $otherArgs | joblist ${joblist.file.fullPath}"""
+
+    require(!cmd.contains("'"))
 
     val bsubStatus = Bash.evalCapture(job).stderr
     val jobSubConfirmation = bsubStatus.split("\n").filter(_.startsWith("Job <"))
@@ -62,10 +64,4 @@ object LsfUtils {
     Seq(directory.parent.parent.name, directory.parent.name, Math.abs(cmd.hashCode).toString, timestamp).mkString("__")
   }
 
-}
-
-
-object test extends App {
-
-  scalautils.tasks.LsfUtils.mailme("test", "hallo holger")
 }
