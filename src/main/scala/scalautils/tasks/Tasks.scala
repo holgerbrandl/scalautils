@@ -66,6 +66,7 @@ object Tasks extends App {
 
 
     override def eval(bashSnippet: BashSnippet): Unit = {
+      Console.err.println(s"Submitting '${bashSnippet.withAutoName.name}' to '$queue'")
       LsfUtils.bsub(bashSnippet.cmd, Some(bashSnippet.name), joblist = joblist)
     }
   }

@@ -35,7 +35,13 @@ object LsfUtils {
 
     val job = s"""${changeWdOptional(workingDirectory)} mysub "$jobName" "$cmd" -q $queue $threadArg $otherArgs | joblist ${joblist.file.fullPath}"""
 
-    Bash.evalCapture(job).stderr
+    val bsubStatus = Bash.evalCapture(job).stderr
+    val jobSubConfirmation = bsubStatus.split("\n").filter(_.startsWith("Job <"))
+
+    if (jobSubConfirmation.isEmpty)
+      throw new RuntimeException(s"job submission of '${name.getOrElse(cmd)}' failed with:\n$bsubStatus")
+    else
+      jobSubConfirmation.head.split(" ")(1).drop(1).dropRight(1).toInt
   }
 
 
