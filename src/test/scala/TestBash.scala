@@ -1,4 +1,6 @@
 
+import java.io.{File => JFile}
+
 import better.files.File
 
 import scalautils.Bash._
@@ -47,7 +49,7 @@ object BashPlayground {
   //R "1+1"
   R("1+1")
 
-  head(new File("/home/brandl/.bash_profile"))
+  head(new JFile("/home/brandl/.bash_profile"))
 
   BashSnippet("touch").name
   BashSnippet("touch").withAutoName

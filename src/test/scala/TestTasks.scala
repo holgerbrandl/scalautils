@@ -10,16 +10,16 @@ import scalautils.tasks.Tasks.{BashSnippet, LsfExecutor, StringOps}
   *
   * @author Holger Brandl
   */
-object TestTasks extends FlatSpec {
+object TestTasks extends FlatSpec with Matchers {
 
-  import Matchers._
+  //  import Matchers._
 
   val wd = (home / "unit_tests").createIfNotExists(true)
 
 
   it should "submit some jobs and wait until they are done " in {
     val tasks = for (i <- 1 to 5) yield {
-      BashSnippet( s"""echo "this is task $i" > task_$i.txt """).inDir(wd)
+      BashSnippet(s"""echo "this is task $i" > task_$i.txt """).inDir(wd).withAutoName
     }
 
     val runner = new LsfExecutor(joblist = JobList(wd / ".test_tasks"))
@@ -28,8 +28,8 @@ object TestTasks extends FlatSpec {
 
     // make sure that outputs have been created
 
-    wd / "task_1.txt" should exist
-    wd / "task_5.txt" should exist
+    (wd / "task_1.txt").toJava should exist
+    (wd / "task_5.txt").toJava should exist
 
     (wd / "task_5.txt").lines shouldBe "this is task $5"
   }

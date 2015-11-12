@@ -68,7 +68,7 @@ package object FastaUtils {
       val nextChunkFile = namer.getNext
       if (!nextChunkFile.parent.exists) nextChunkFile.parent.createDirectory()
 
-      assume(!nextChunkFile.exists) // make sure that we do not override existing chunk files
+      assume(!nextChunkFile.exists, s"$nextChunkFile is already present") // make sure that we do not override existing chunk files
 
       writeFasta(chunk, nextChunkFile)
 

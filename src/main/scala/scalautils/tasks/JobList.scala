@@ -2,6 +2,7 @@ package scalautils.tasks
 
 import better.files.File
 
+import scalautils.Bash
 import scalautils.tasks.Tasks._
 
 /**
@@ -10,6 +11,8 @@ import scalautils.tasks.Tasks._
   * @author Holger Brandl
   */
 case class JobList(file: File = File(".joblist")) extends AnyRef {
+
+  def btop() = Bash.eval(s"cat ${file.fullPath} | xargs -L1 btop")
 
 
   def this(name: String) = this(File(name))

@@ -66,7 +66,7 @@ object Tasks extends App {
 
 
     override def eval(bashSnippet: BashSnippet): Unit = {
-      LsfUtils.bsub(bashSnippet.name, bashSnippet.cmd, joblist = joblist)
+      LsfUtils.bsub(bashSnippet.cmd, Some(bashSnippet.name), joblist = joblist)
     }
   }
 
@@ -79,7 +79,7 @@ object Tasks extends App {
 
 
     def withAutoName: BashSnippet = {
-      this.copy(name = Seq(wd.parent.parent, wd.parent, cmd.hashCode.toString).mkString("__"))
+      this.copy(name = LsfUtils.buildJobName(this.wd, this.cmd))
     }
 
 
@@ -96,8 +96,9 @@ object Tasks extends App {
     }
 
 
-    def eval(implicit snippetEvaluator: SnippetExecutor = new LocalShell()) = {
-      snippetEvaluator.eval(this)
+    def eval(implicit snippetEvaluator: SnippetExecutor = new LocalShell()): Unit = {
+      val namedSnippet = if (this.name.isEmpty) this.withAutoName else this
+      snippetEvaluator.eval(namedSnippet)
     }
   }
 

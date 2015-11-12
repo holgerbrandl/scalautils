@@ -1,5 +1,8 @@
 package scalautils.tasks
 
+import java.text.SimpleDateFormat
+import java.util.Date
+
 import better.files.File
 
 import scalautils.Bash
@@ -19,13 +22,20 @@ object LsfUtils {
   }
 
 
-  def bsub(name: String, cmd: String, joblist: JobList = new JobList(".jobs"), numCores: Int = 1, queue: String = "short", otherArgs: String = "", workingDirectory: File = null) = {
+  /** Submits a task to the LSF. */
+  def bsub(cmd: String,
+           name: Option[String] = None,
+           joblist: JobList = new JobList(".jobs"),
+           numCores: Int = 1, queue: String = "short", otherArgs: String = "",
+           workingDirectory: File = File(".")) = {
+
     val threadArg = if (numCores > 1) s"-R span[hosts=1] -n $numCores" else ""
 
-    val job = s"""${changeWdOptional(workingDirectory)} mysub $name "$cmd" -q $queue $threadArg $otherArgs| joblist $joblist"""
+    val jobName = name.getOrElse(buildJobName(workingDirectory, cmd))
 
-    //    job
-    Bash.evalCapture(job).stdout
+    val job = s"""${changeWdOptional(workingDirectory)} mysub "$jobName" "$cmd" -q $queue $threadArg $otherArgs | joblist ${joblist.file.fullPath}"""
+
+    Bash.evalCapture(job).stderr
   }
 
 
@@ -37,13 +47,15 @@ object LsfUtils {
   def mailme(subject: String, body: String = "", logSubject: Boolean = true) = {
     if (logSubject) Console.err.println(s"$subject")
 
-    //    val subject = "test"
-    //    val body = """
-    //    hello world
-    //    more content""".stripLeadingWS
-
     Bash.eval(s"""echo -e 'Subject:$subject\n\n $body' | sendmail $$(whoami)@mpi-cbg.de > /dev/null""")
   }
+
+
+  def buildJobName(directory: File, cmd: String) = {
+    val timestamp = new SimpleDateFormat("MMddyyyyHHmmss").format(new Date())
+    Seq(directory.parent.parent.name, directory.parent.name, Math.abs(cmd.hashCode).toString, timestamp).mkString("__")
+  }
+
 }
 
 

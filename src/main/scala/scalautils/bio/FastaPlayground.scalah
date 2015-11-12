@@ -1,0 +1,3 @@
+import java.io.{File => JFile}
+
+//writeFasta(readFasta(inputFasta).take(20), inputFasta.parent/(inputFasta.nameWithoutExtension+"_20.fasta"))
