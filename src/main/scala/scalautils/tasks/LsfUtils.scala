@@ -16,7 +16,7 @@ object LsfUtils {
 
 
   def wait4jobs(joblist: File = File(".jobs"), msg: String) = {
-    Bash.eval(s"""${changeWdOptional(joblist.parent)} wait4jobsReport $joblist""")
+    Bash.eval(s"""${changeWdOptional(joblist.parent)} wait4jobsReport ${joblist.fullPath}""")
 
     if (msg != null) Bash.eval(s"mailme $msg")
   }

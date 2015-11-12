@@ -96,7 +96,7 @@ object Tasks extends App {
     }
 
 
-    def eval(implicit snippetEvaluator: SnippetExecutor = new LocalShell()): Unit = {
+    def eval(implicit snippetEvaluator: SnippetExecutor = new DryRunExecutor()): Unit = {
       val namedSnippet = if (this.name.isEmpty) this.withAutoName else this
       snippetEvaluator.eval(namedSnippet)
     }
