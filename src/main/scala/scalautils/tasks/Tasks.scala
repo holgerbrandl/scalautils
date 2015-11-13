@@ -66,7 +66,8 @@ object Tasks extends App {
 
 
     override def eval(bashSnippet: BashSnippet): Unit = {
-      val jobId = LsfUtils.bsub(bashSnippet.cmd, Some(bashSnippet.name), joblist = joblist, workingDirectory = bashSnippet.wd)
+      // todo since we forward everything we could also inine bsub here
+      val jobId = LsfUtils.bsub(bashSnippet.cmd, Some(bashSnippet.name), queue=queue, numCores= numThreads, joblist = joblist, workingDirectory = bashSnippet.wd)
       Console.err.println(s"Submitting '${bashSnippet.withAutoName.name}' to '$queue' with jobid '$jobId'")
     }
   }

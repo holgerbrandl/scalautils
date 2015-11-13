@@ -93,7 +93,6 @@ object BashTest extends App {
 
 
   val jobCmed = "cd '/home/brandl/unit_tests'; mysub \"Users__brandl__633224592__1112201512d4102\" 'cd /home/brandl/unit_tests ## lsfutils:change into wd\nsleep 60; echo \"this is task 1\" > task_1.txt ' -q short   | joblist /home/brandl/unit_tests/.test_tasks"
-  jobCmed
   Bash.evalCapture(jobCmed)
 
 

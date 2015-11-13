@@ -14,10 +14,10 @@ object IOUtils {
 
   // for partially applied functions see
   // http://stackoverflow.com/questions/14309501/scala-currying-vs-partially-applied-functions
-  def saveAs(fileName: String): Unit = saveAs(new File(fileName)) _
+  def saveAs(fileName: String) = saveAs(new File(fileName)) _
 
 
-  def saveAs(file: better.files.File): Unit = saveAs(file.toJava) _
+  def saveAs(file: better.files.File) = saveAs(file.toJava) _
 
   // see http://stackoverflow.com/questions/4604237/how-to-write-to-a-file-in-scala
   //  http://stackoverflow.com/questions/6879427/scala-write-string-to-file-in-one-statement

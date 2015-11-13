@@ -18,7 +18,7 @@ case class JobList(file: File = File(".joblist")) extends AnyRef {
   def this(name: String) = this(File(name))
 
 
-  def waitUntilDone(msg: String = "") = LsfUtils.wait4jobs(this.file, msg)
+  def waitUntilDone(msg: String = "") = LsfUtils.wait4jobs(this.file)
 
 
   def killed = {

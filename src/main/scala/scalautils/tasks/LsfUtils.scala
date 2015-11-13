@@ -15,10 +15,12 @@ import scalautils.Bash
 object LsfUtils {
 
 
-  def wait4jobs(joblist: File = File(".jobs"), msg: String) = {
-    Bash.eval(s"wait4jobsReport ${joblist.fullPath}")
-
-    if (msg != null) Bash.eval(s"mailme $msg")
+  def wait4jobs(joblist: File = File(".jobs"), withReport:Boolean=false) = {
+    if(withReport) {
+      Bash.eval(s"wait4jobsReport ${joblist.fullPath}")
+    }else {
+      Bash.eval(s"wait4jobs ${joblist.fullPath}")
+    }
   }
 
 
@@ -35,6 +37,7 @@ object LsfUtils {
 
     val job = s"""cd '${workingDirectory.fullPath}'; mysub "$jobName" '$cmd' -q $queue $threadArg $otherArgs | joblist ${joblist.file.fullPath}"""
 
+    //todo could be avoided if we would call bsub directly (because ProcessIO takes care that arguments are correctly provided as input arguments to binaries)
     require(!cmd.contains("'"))
 
     val bsubStatus = Bash.evalCapture(job).stderr

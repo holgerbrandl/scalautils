@@ -21,13 +21,13 @@ class FastaTest extends FlatSpec with Matchers {
 
 
     //    val fastaRecords = readFasta(testFasta)
-    val chunks = createChunks(openFasta(testFasta), 50, new SimpleChunkNamer(baseDir = wd, prefix = "test_chunk_"))
+    val chunks = createChunks(openFasta(testFasta), 200, new SimpleChunkNamer(baseDir = wd, prefix = "test_chunk_"))
 
     wd.glob("**/test_chunk*").size should be > 0
 
     // ensure that the chunks actually contain 20 sequences
     val chunkRecords = readFasta(wd.glob("**/test_chunk*").next())
-    chunkRecords should have size 50
+    chunkRecords should have size 200
 
     // validate a single record
     val firstRecord = chunkRecords.head

@@ -19,19 +19,23 @@ class TestTasks extends FlatSpec with Matchers {
 
   it should "submit some jobs and wait until they are done " in {
     val tasks = for (i <- 1 to 5) yield {
-      BashSnippet(s"""sleep 60; echo "this is task $i" > task_$i.txt """).inDir(wd).withAutoName
+      BashSnippet(s"""sleep 15; echo "this is task $i" > task_$i.txt """).inDir(wd).withAutoName
     }
 
-    val runner = new LsfExecutor(joblist = JobList(wd / ".test_tasks"))
+    val runner = new LsfExecutor(joblist = JobList(wd / ".test_tasks"), queue = "medium")
     runner.joblist.reset
 
-    //    runner.eval(tasks)
-    //    tasks.foreach(_.eval(runner))
-    tasks.head.eval(runner)
+        runner.eval(tasks)
+    // tasks.foreach(_.eval(runner))
+    // tasks.head.eval(runner)
     runner.joblist.waitUntilDone()
 
     // make sure that outputs have been created
     (wd / ".logs").toJava should exist
+    (wd / ".logs").glob("*").toList.head.lines.next should contain ("medium")
+    (wd / ".logs").list.toIndexedSeq
+
+//    val wd = File("/Volumes/home/brandl/unit_tests")
     (wd / ".test_tasks").toJava should exist
 
 
