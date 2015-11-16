@@ -16,6 +16,8 @@ class TestTasks extends FlatSpec with Matchers {
 
   val wd = (home / "unit_tests").createIfNotExists(true)
 
+  wd.list.map(_.delete())
+
 
   it should "submit some jobs and wait until they are done " in {
     val tasks = for (i <- 1 to 5) yield {
@@ -25,15 +27,19 @@ class TestTasks extends FlatSpec with Matchers {
     val runner = new LsfExecutor(joblist = JobList(wd / ".test_tasks"), queue = "medium")
     runner.joblist.reset
 
-        runner.eval(tasks)
+    runner.eval(tasks)
     // tasks.foreach(_.eval(runner))
     // tasks.head.eval(runner)
     runner.joblist.waitUntilDone()
 
+    // http://www.scalatest.org/user_guide/matchers_quick_reference
+
     // make sure that outputs have been created
     (wd / ".logs").toJava should exist
-    (wd / ".logs").glob("*").toList.head.lines.next should contain ("medium")
-    (wd / ".logs").list.toIndexedSeq
+
+    // relative globbing broken in b-f --> fixed for new version
+    //    (wd / ".logs").glob("*").toList.head.lines.next should include ("medium")
+    (wd / ".logs").list.filter(_.name.contains("lsf")).next().lines.next should include("medium")
 
 //    val wd = File("/Volumes/home/brandl/unit_tests")
     (wd / ".test_tasks").toJava should exist
@@ -42,7 +48,7 @@ class TestTasks extends FlatSpec with Matchers {
     (wd / "task_1.txt").toJava should exist
     (wd / "task_5.txt").toJava should exist
 
-    (wd / "task_5.txt").lines shouldBe "this is task $5"
+    (wd / "task_5.txt").lines.next shouldBe "this is task 5"
   }
 
   //  Bash.eval("echo test")(BashMode(beVerbose = true))
