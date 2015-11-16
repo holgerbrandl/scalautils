@@ -35,7 +35,7 @@ object Bash {
 
   // http://stackoverflow.com/questions/15411728/scala-process-capture-standard-out-and-exit-code
   // http://stackoverflow.com/questions/5221524/idiomatic-way-to-convert-an-inputstream-to-a-string-in-scala
-  def evalCapture(script: String)(implicit mode: BashMode = BashMode()): BashResult = {
+  def eval(script: String)(implicit mode: BashMode = BashMode()): BashResult = {
 
     if (mode.beVerbose) println("script:\n" + script.trim)
 
@@ -64,7 +64,7 @@ object Bash {
   }
 
 
-  def eval(script: String, logBase: String = null)(implicit mode: BashMode = BashMode()): Int = {
+  def evalStatus(script: String, logBase: String = null)(implicit mode: BashMode = BashMode()): Int = {
     val logger = if (logBase != null) s"1> $logBase.out.log 2>$logBase.err.log".split(" ")
 
     if (mode.beVerbose) println("script:\n" + script.trim)
@@ -86,14 +86,14 @@ object Bash {
 object BashTest extends App {
 
   //  import scalautils.Bash
-  Bash.evalCapture("""cd ~/unit_tests
+  Bash.eval("""cd ~/unit_tests
   echo baum > baum.txt
   echo haus > haus.txt""")
-  Bash.evalCapture("cd ~/unit_tests\n echo baum > baum2.txt\necho haus > haus2.txt")
+  Bash.eval("cd ~/unit_tests\n echo baum > baum2.txt\necho haus > haus2.txt")
 
 
   val jobCmed = "cd '/home/brandl/unit_tests'; mysub \"Users__brandl__633224592__1112201512d4102\" 'cd /home/brandl/unit_tests ## lsfutils:change into wd\nsleep 60; echo \"this is task 1\" > task_1.txt ' -q short   | joblist /home/brandl/unit_tests/.test_tasks"
-  Bash.evalCapture(jobCmed)
+  Bash.eval(jobCmed)
 
 
 }
