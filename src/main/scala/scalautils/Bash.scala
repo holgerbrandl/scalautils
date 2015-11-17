@@ -30,8 +30,10 @@ object Bash {
   def evalContent(bashSnippet: String) = Seq("/bin/bash", "-c", s"$bashSnippet").!!.trim
 
 
-  case class BashResult(exitCode: Int, stdout: String, stderr: String)
+  case class BashResult(exitCode: Int, stdout: Iterable[String], stderr: Iterable[String])
 
+
+  eval("echo").stdout
 
   // http://stackoverflow.com/questions/15411728/scala-process-capture-standard-out-and-exit-code
   // http://stackoverflow.com/questions/5221524/idiomatic-way-to-convert-an-inputstream-to-a-string-in-scala
@@ -60,7 +62,7 @@ object Bash {
       return null
 
     //    BashResult(f"$script".run(io).exitValue(), out, err)
-    BashResult(Seq("/bin/bash", "-c", s"$script").run(io).exitValue(), out, err)
+    BashResult(Seq("/bin/bash", "-c", s"$script").run(io).exitValue(), out.split("\n"), err.split("\n"))
   }
 
 
