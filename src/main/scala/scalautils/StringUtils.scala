@@ -16,6 +16,17 @@ object StringUtils {
 
     ///http://stackoverflow.com/a/6061104/590437
     def stripLeadingWS = s.split("\n").map(_.trim).mkString("\n").trim
+
+
+    def alignLeft = {
+      val split = s.split("\n")
+      val minWS = split.map(line => {
+        line.split("\\S").headOption.getOrElse("").length
+        // or use lift(3) see http://stackoverflow.com/questions/4981689/get-item-in-the-list-in-scala
+      }).min
+
+      split.map(_.substring(minWS)).mkString("\n")
+    }
   }
 
 
