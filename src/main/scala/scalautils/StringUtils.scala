@@ -20,14 +20,12 @@ object StringUtils {
 
     def alignLeft = {
       val split = s.split("\n")
-      val minWS = split.map(line => {
-        line.split("\\S").headOption.getOrElse("").length
+      val minWS = split.filter(_.trim.length > 0).map(line => {
+        line.split("\\S").head.length
         // or use lift(3) see http://stackoverflow.com/questions/4981689/get-item-in-the-list-in-scala
       }).min
 
-      split.map(_.substring(minWS)).mkString("\n")
+      split.map(line => if (line.trim.isEmpty) "" else line.substring(minWS)).mkString("\n")
     }
   }
-
-
 }
