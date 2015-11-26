@@ -15,7 +15,7 @@ class ShellTest extends FlatSpec with Matchers {
     wd.glob("**").foreach(_.delete())
     wd.createIfNotExists(true) //todo glob ** should not capture the wd itself (b.f. bug?)
 
-    rendr_snippet("test_report", """
+    rendrSnippet("test_report", """
     #' # Test Report
 
     require(ggplot2)
