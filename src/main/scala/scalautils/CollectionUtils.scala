@@ -1,7 +1,6 @@
 package scalautils
 
 
-
 /**
   * @author Holger Brandl
   */
@@ -21,6 +20,13 @@ object CollectionUtils {
 
     def strictIntersect(that: Seq[T]) = {
       someSeq.intersect(that)
+    }
+
+    def strictXor(that: Seq[T]) = {
+      val xorLeft = someSeq.strictDiff(that)
+      val xorRight = that.strictDiff(someSeq)
+
+      xorLeft.strictUnion(xorRight)
     }
   }
 

@@ -30,6 +30,6 @@ object BlastUtils {
     // find the position of the last results' id  in the fasta file
     val curIndex = allSeqIds.indexOf(curProcessQuery)
 
-    curIndex / allSeqIds.length
+    curIndex.toDouble / allSeqIds.length
   }
 }
