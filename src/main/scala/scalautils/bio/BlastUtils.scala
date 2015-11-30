@@ -17,9 +17,8 @@ object BlastUtils {
     */
   def calculateProgress(fastaFile: File, blastOutput: File): Double = {
     require(fastaFile.isRegularFile && !fastaFile.isEmpty)
-    require(blastOutput.isRegularFile)
 
-    if (blastOutput.isEmpty) {
+    if (!blastOutput.isRegularFile || blastOutput.isEmpty) {
       return 0
     }
 
