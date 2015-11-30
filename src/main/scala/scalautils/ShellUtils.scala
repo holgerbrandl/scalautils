@@ -14,4 +14,5 @@ object ShellUtils {
   }
 
 
+  def isInPath(tool: String) = Bash.eval(s"which $tool").sout.isEmpty
 }

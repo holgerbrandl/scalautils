@@ -14,8 +14,9 @@ package object r {
   def rendrSnippet(reportName: String, rSnippet: String,
                    showCode: Boolean = true, args: String = "", wd: File = File(".")) = {
 
+
     val reportFileName = reportName.replaceAll("[/ ]", "_")
-    require(Bash.eval("which rend.R").stdout.nonEmpty, "rend.R is not installed. See https://github.com/holgerbrandl/datautils/tree/master/R/rendr")
+    require(ShellUtils.isInPath("rend.R"), "rend.R is not installed. See https://github.com/holgerbrandl/datautils/tree/master/R/rendr")
 
     val tempDir = File.newTempDir(prefix = "rsnip_")
 

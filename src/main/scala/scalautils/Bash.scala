@@ -30,7 +30,12 @@ object Bash {
   def evalContent(bashSnippet: String) = Seq("/bin/bash", "-c", s"$bashSnippet").!!.trim
 
 
-  case class BashResult(exitCode: Int, stdout: Iterable[String], stderr: Iterable[String])
+  case class BashResult(exitCode: Int, stdout: Iterable[String], stderr: Iterable[String]) {
+    def sout = stdout.mkString("\n")
+
+
+    def serr = stderr.mkString("\n")
+  }
 
 
   eval("echo").stdout
