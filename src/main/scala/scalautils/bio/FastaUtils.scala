@@ -62,6 +62,7 @@ package object FastaUtils {
 
 
   /** Inspired by http://stackoverflow.com/questions/7459174/split-list-into-multiple-lists-with-fixed-number-of-elements. */
+  // todo use proper api instead of static method to create chunks
   def createChunks(fastaIt: Iterator[FastaRecord], chunkSize: Int, namer: ChunkNamer = new SimpleChunkNamer()) = {
 
     fastaIt.grouped(chunkSize).map(chunk => {
