@@ -1,4 +1,5 @@
-import scalautils.IOUtils
+package scalautils
+
 import scalautils.IOUtils.saveAs
 
 /**

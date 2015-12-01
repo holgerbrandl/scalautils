@@ -7,7 +7,7 @@ package scalautils
   */
 
 
-import java.io.File
+import java.io.{BufferedReader, PrintStream}
 
 import scala.language.postfixOps
 import scala.sys.process._
@@ -23,7 +23,6 @@ object Bash {
 
   case class BashMode(beVerbose: Boolean = false, dryRun: Boolean = false)
 
-  import sys.process._
 
   // notes must be different since otherwise eval's would share the same base-signature
   @Deprecated
@@ -37,8 +36,6 @@ object Bash {
     def serr = stderr.mkString("\n")
   }
 
-
-  eval("echo").stdout
 
   // http://stackoverflow.com/questions/15411728/scala-process-capture-standard-out-and-exit-code
   // http://stackoverflow.com/questions/5221524/idiomatic-way-to-convert-an-inputstream-to-a-string-in-scala
@@ -54,11 +51,14 @@ object Bash {
     val io = new ProcessIO(
       stdin => None,
       stdout => {
-        out = scala.io.Source.fromInputStream(stdout).mkString
+        //        out = scala.io.Source.fromInputStream(stdout).mkString
+        out = mkMonitor(scala.io.Source.fromInputStream(stdout).bufferedReader())
         stdout.close()
       },
       stderr => {
-        err = scala.io.Source.fromInputStream(stderr).mkString
+        //        err = scala.io.Source.fromInputStream(stderr).mkString
+        err = mkMonitor(scala.io.Source.fromInputStream(stderr).bufferedReader(), Console.err)
+
         stderr.close()
       })
 
@@ -69,6 +69,23 @@ object Bash {
     //    BashResult(f"$script".run(io).exitValue(), out, err)
     BashResult(Seq("/bin/bash", "-c", s"$script").run(io).exitValue(), out.split("\n"), err.split("\n"))
   }
+
+
+  def mkMonitor(allReader: BufferedReader, monitorStream: PrintStream = Console.out) = {
+    // adopted from scala.io.BufferedSource.mkString
+    val sb = new StringBuilder
+    val buf = new Array[Char](scala.io.Source.DefaultBufSize)
+    var n = 0
+
+    while (n != -1) {
+      n = allReader.read(buf)
+      monitorStream.print(buf)
+      if (n > 0) sb.appendAll(buf, 0, n)
+    }
+
+    sb.result
+  }
+
 
 
   def evalStatus(script: String, logBase: String = null)(implicit mode: BashMode = BashMode()): Int = {
@@ -83,24 +100,6 @@ object Bash {
     //    Seq("/bin/bash", "-c", "echo lala").!
   }
 
-
-  def head(file: File): Unit = {
-    s"head ${file.getAbsolutePath}" !
-  }
 }
 
 
-object BashTest extends App {
-
-  //  import scalautils.Bash
-  Bash.eval("""cd ~/unit_tests
-  echo baum > baum.txt
-  echo haus > haus.txt""")
-  Bash.eval("cd ~/unit_tests\n echo baum > baum2.txt\necho haus > haus2.txt")
-
-
-  val jobCmed = "cd '/home/brandl/unit_tests'; mysub \"Users__brandl__633224592__1112201512d4102\" 'cd /home/brandl/unit_tests ## lsfutils:change into wd\nsleep 60; echo \"this is task 1\" > task_1.txt ' -q short   | joblist /home/brandl/unit_tests/.test_tasks"
-  Bash.eval(jobCmed)
-
-
-}

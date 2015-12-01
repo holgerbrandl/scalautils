@@ -1,3 +1,5 @@
+package scalautils
+
 import better.files._
 import org.scalatest.{FlatSpec, Matchers}
 

@@ -2,7 +2,8 @@ package scalautils
 
 import java.io.{File, PrintWriter}
 
-import scala.language.implicitConversions
+import scala.language.{implicitConversions, postfixOps}
+import scala.sys.process._
 
 
 /**
@@ -37,40 +38,6 @@ object IOUtils {
   def saveAs(f: File, lines: Seq[String]): Unit = saveAs(f) { p => lines.foreach(p.println) }
 
 
-  /** Also consider sbt solution
-    val lines: Vector[String] = IO.readLines(f).toVector
-
-    // Writing
-    IO.writeLines(file1, lines)
-
-    */
-
-
-  /** implicit conversion rules. To use them do   import de.mpicbg.rink.plantx.FileUtils._ */
-  @Deprecated
-  object FileUtils {
-
-
-    implicit class FileApiImplicits(file: File) {
-
-      @Deprecated
-      def mkdirOptional = {
-        if (!file.isDirectory) file.mkdir()
-        file
-      }
-    }
-
-
-    @Deprecated
-    implicit def string2file(s: String): File = new File(s)
-
-
-    @Deprecated
-    implicit def file2string(s: String): String = s.getAbsolutePath
-
-  }
-
-
   /** implicit conversion rules. To use them do   import de.mpicbg.rink.plantx.FileUtils._ */
   @Deprecated
   object BetterFileUtils {
@@ -78,24 +45,9 @@ object IOUtils {
 
     implicit class FileApiImplicits(file: better.files.File) {
 
-      @Deprecated
-      def mkdirOptional = {
-        if (!file.isDirectory) file.createDirectory()
-        file
-      }
+      def head = s"head ${file.fullPath}" !
     }
-
-
-    @Deprecated
-    implicit def string2file(s: String): File = new File(s)
-
-
-    @Deprecated
-    implicit def file2string(s: String): String = s.getAbsolutePath
-
   }
-
-
 }
 
 
