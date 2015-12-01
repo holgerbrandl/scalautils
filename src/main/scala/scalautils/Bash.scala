@@ -21,6 +21,7 @@ import scala.sys.process._
 object Bash {
 
 
+  @Deprecated // too complicated api
   case class BashMode(beVerbose: Boolean = false, dryRun: Boolean = false)
 
 
@@ -39,7 +40,9 @@ object Bash {
 
   // http://stackoverflow.com/questions/15411728/scala-process-capture-standard-out-and-exit-code
   // http://stackoverflow.com/questions/5221524/idiomatic-way-to-convert-an-inputstream-to-a-string-in-scala
-  def eval(script: String)(implicit mode: BashMode = BashMode()): BashResult = {
+  // todo add argument to disable stderr/stdout recording (to prevent memory problems)
+  // tooo refactor away mode
+  def eval(script: String, showOutput: Boolean = false)(implicit mode: BashMode = BashMode()): BashResult = {
 
     if (mode.beVerbose) println("script:\n" + script.trim)
 
@@ -48,16 +51,25 @@ object Bash {
     var err = ""
     var out = ""
 
+    // todo extract method
+
     val io = new ProcessIO(
       stdin => None,
       stdout => {
-        //        out = scala.io.Source.fromInputStream(stdout).mkString
-        out = mkMonitor(scala.io.Source.fromInputStream(stdout).bufferedReader())
+        if (showOutput) {
+          out = mkMonitor(scala.io.Source.fromInputStream(stdout).bufferedReader())
+        } else {
+          out = scala.io.Source.fromInputStream(stdout).mkString
+        }
+
         stdout.close()
       },
       stderr => {
-        //        err = scala.io.Source.fromInputStream(stderr).mkString
-        err = mkMonitor(scala.io.Source.fromInputStream(stderr).bufferedReader(), Console.err)
+        if (showOutput) {
+          err = mkMonitor(scala.io.Source.fromInputStream(stderr).bufferedReader())
+        } else {
+          err = scala.io.Source.fromInputStream(stderr).mkString
+        }
 
         stderr.close()
       })
@@ -85,7 +97,6 @@ object Bash {
 
     sb.result
   }
-
 
 
   def evalStatus(script: String, logBase: String = null)(implicit mode: BashMode = BashMode()): Int = {
