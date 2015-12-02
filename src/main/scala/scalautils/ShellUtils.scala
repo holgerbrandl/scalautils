@@ -14,7 +14,7 @@ object ShellUtils {
   }
 
 
-  def isInPath(tool: String) = Bash.eval(s"which $tool").sout.isEmpty
+  def isInPath(tool: String) = Bash.eval(s"which $tool").sout.trim.nonEmpty
 
 
   def requireInPath(tool: String) = require(isInPath(tool), s"$tool is not in PATH")
