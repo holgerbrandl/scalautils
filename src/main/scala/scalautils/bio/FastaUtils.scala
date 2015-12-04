@@ -1,6 +1,6 @@
 package scalautils
 
-import java.io.{BufferedReader, File => JFile, FileReader}
+import java.io.{File => JFile}
 
 import better.files.File
 
@@ -63,7 +63,7 @@ package object FastaUtils {
 
   /** Inspired by http://stackoverflow.com/questions/7459174/split-list-into-multiple-lists-with-fixed-number-of-elements. */
   // todo use proper api instead of static method to create chunks
-  def createChunks(fastaIt: Iterator[FastaRecord], chunkSize: Int, namer: ChunkNamer = new SimpleChunkNamer()) = {
+  def createChunks(fastaIt: Iterable[FastaRecord], chunkSize: Int, namer: ChunkNamer = new SimpleChunkNamer()) = {
 
     fastaIt.grouped(chunkSize).map(chunk => {
       val nextChunkFile = namer.getNext
@@ -89,51 +89,84 @@ package object FastaUtils {
   }
 
 
-  def openFasta(fastaFile: File): Iterator[FastaRecord] = {
-    new FastaReader(fastaFile.fullPath)
+  def openFasta(fastaFile: File) = {
+    //    new FastaReader(fastaFile.fullPath)
+    new BufferedFastaReader(fastaFile.fullPath).toIterable
   }
 
 
-  private class FastaReader(val filename: String) extends Iterator[FastaRecord] {
+  private class BufferedFastaReader(val filename: String) extends Iterator[FastaRecord] {
 
-    private lazy val reader = new BufferedReader(new FileReader(filename))
-
-
-    class FastaReadException(string: String) extends Exception(string)
+    private val fileIt = io.Source.fromFile(filename).getLines().filterNot(_.isEmpty).buffered
 
 
-    def hasNext() = reader.ready
+    def hasNext() = fileIt.hasNext
 
 
     def next(): FastaRecord = {
-      // Read the tag line
-      val tag = reader.readLine
-      if (tag(0) != '>')
-        throw new FastaReadException("record start expected")
-      var sequencelist = ""
-      // Read the sequence body
+      val tag = fileIt.next() // Read the tag line
+
+      if (tag(0) != '>') throw new FastaReadException("record start expected")
+
+      val sb: StringBuilder = new StringBuilder()
+
       do {
-        reader.mark(512) // 512 is sufficient for a single tag line
-        val line = reader.readLine
-        if (line(0) != '>') sequencelist += line
-        if (!reader.ready || line(0) == '>') {
-          // Reached the end of the sequence
-          if (reader.ready) reader.reset()
+        sb.append(fileIt.next())
+      } while (fileIt.hasNext && !fileIt.head.startsWith(">"))
 
-          // Remove prepending '>' and separate header from id
-          val splitRecHeader = tag.drop(1).trim.split(Array(' ', '\t'))
-          val id = splitRecHeader(0)
-          val desc = if (splitRecHeader.length == 2) Some(splitRecHeader(1)) else None
+      // Remove prepending '>' and separate description from id
+      val header: Array[String] = tag.drop(1).trim.split("\\s+")
+      val id = header(0)
+      val desc = if (header.length == 2) Some(header.drop(1).mkString(" ")) else None
 
-          return FastaRecord(id, desc, sequencelist)
-        }
-      } while (reader.ready)
-      // should never reach this...
-      throw new FastaReadException("Error in file " + filename + " (tag=" + tag + ")")
+      // todo use string-builder directly in FastaRecord to speed up fasta-processing
+      FastaRecord(id, desc, sb.toString())
     }
   }
+
 }
 
+//   class FastaReader(val filename: String) extends Iterator[FastaRecord] {
+//
+//    private lazy val reader = new BufferedReader(new FileReader(filename))
+//
+//
+//    class FastaReadException(string: String) extends Exception(string)
+//
+//
+//    def hasNext() = reader.ready
+//
+//
+//    def next(): FastaRecord = {
+//      // Read the tag line
+//      val tag = reader.readLine
+//      if (tag(0) != '>')
+//        throw new FastaReadException("record start expected")
+//      var sequencelist = ""
+//      // Read the sequence body
+//      do {
+//        reader.mark(512) // 512 is sufficient for a single tag line
+//        val line = reader.readLine
+//        if (line(0) != '>') sequencelist += line
+//        if (!reader.ready || line(0) == '>') {
+//          // Reached the end of the sequence
+//          if (reader.ready) reader.reset()
+//
+//          // Remove prepending '>' and separate header from id
+//          val splitRecHeader = tag.drop(1).trim.split(Array(' ', '\t'))
+//          val id = splitRecHeader(0)
+//          val desc = if (splitRecHeader.length == 2) Some(splitRecHeader(1)) else None
+//
+//          return FastaRecord(id, desc, sequencelist)
+//        }
+//      } while (reader.ready)
+//      // should never reach this...
+//      throw new FastaReadException("Error in file " + filename + " (tag=" + tag + ")")
+//    }
+//  }
+
+
+class FastaReadException(string: String) extends Exception(string)
 
 /** From http://codeaffectionate.blogspot.de/2013/05/reading-fasta-files-with-scala.html */
 //  def fastaIterator(filename: File) =
