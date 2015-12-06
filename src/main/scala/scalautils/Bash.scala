@@ -50,7 +50,7 @@ object Bash {
     if (mode.beVerbose) println("script:\n" + script.trim)
 
     //    ("/bin/ls /tmp" run BasicIO(false, None, None)).exitValue
-    require(showOutput != (redirectStderr != null || redirectStdout != null),
+    require(!(showOutput && (redirectStderr != null || redirectStdout != null)),
       "output display while directing stder/in into files is not yet implemented.")
 
     var err = ""
