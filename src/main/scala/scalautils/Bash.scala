@@ -34,10 +34,10 @@ object Bash {
 
 
   case class BashResult(exitCode: Int, stdout: Iterable[String], stderr: Iterable[String]) {
-    def sout = stdout.mkString("\n")
+    def sout = stdout.mkString("\n").trim()
 
 
-    def serr = stderr.mkString("\n")
+    def serr = stderr.mkString("\n").trim()
   }
 
 
@@ -45,9 +45,9 @@ object Bash {
   // http://stackoverflow.com/questions/5221524/idiomatic-way-to-convert-an-inputstream-to-a-string-in-scala
   // todo add argument to disable stderr/stdout recording (to prevent memory problems)
   // tooo refactor away mode
-  def eval(script: String, showOutput: Boolean = false, redirectStdout: File = null, redirectStderr: File = null)(implicit mode: BashMode = BashMode()): BashResult = {
+  def eval(script: String, showOutput: Boolean = false, redirectStdout: File = null, redirectStderr: File = null): BashResult = {
 
-    if (mode.beVerbose) println("script:\n" + script.trim)
+    //    if (mode.beVerbose) println("script:\n" + script.trim)
 
     //    ("/bin/ls /tmp" run BasicIO(false, None, None)).exitValue
     require(!(showOutput && (redirectStderr != null || redirectStdout != null)),
@@ -89,8 +89,8 @@ object Bash {
       })
 
 
-    if (mode.dryRun)
-      return null
+    //    if (mode.dryRun)
+    //      return null
 
     //    BashResult(f"$script".run(io).exitValue(), out, err)
     BashResult(Seq("/bin/bash", "-c", s"$script").run(io).exitValue(), out.split("\n"), err.split("\n"))
@@ -105,7 +105,7 @@ object Bash {
 
     while (n != -1) {
       n = allReader.read(buf)
-      monitorStream.print(buf)
+      monitorStream.print(buf.subSequence(0, n))
       if (n > 0) sb.appendAll(buf, 0, n)
     }
 
