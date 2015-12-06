@@ -59,7 +59,6 @@ object Bash {
     //    http://stackoverflow.com/questions/2782638/is-there-a-nice-safe-quick-way-to-write-an-inputstream-to-a-file-in-scala
     // todo extract method
 
-
     val io = new ProcessIO(
       stdin => None,
       stdout => {
@@ -84,8 +83,6 @@ object Bash {
           } else {
             err = scala.io.Source.fromInputStream(stderr).mkString
           }
-
-          err = scala.io.Source.fromInputStream(stderr).mkString
         }
 
         stderr.close()
