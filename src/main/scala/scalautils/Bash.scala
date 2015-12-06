@@ -8,6 +8,9 @@ package scalautils
 
 
 import java.io.{BufferedReader, PrintStream}
+import java.nio.file.Files
+
+import better.files.File
 
 import scala.language.postfixOps
 import scala.sys.process._
@@ -42,16 +45,20 @@ object Bash {
   // http://stackoverflow.com/questions/5221524/idiomatic-way-to-convert-an-inputstream-to-a-string-in-scala
   // todo add argument to disable stderr/stdout recording (to prevent memory problems)
   // tooo refactor away mode
-  def eval(script: String, showOutput: Boolean = false)(implicit mode: BashMode = BashMode()): BashResult = {
+  def eval(script: String, showOutput: Boolean = false, redirectStdout: File = null, redirectStderr: File = null)(implicit mode: BashMode = BashMode()): BashResult = {
 
     if (mode.beVerbose) println("script:\n" + script.trim)
 
     //    ("/bin/ls /tmp" run BasicIO(false, None, None)).exitValue
+    require(showOutput != (redirectStderr != null || redirectStdout != null),
+      "output display while directing stder/in into files is not yet implemented.")
 
     var err = ""
     var out = ""
 
+    //    http://stackoverflow.com/questions/2782638/is-there-a-nice-safe-quick-way-to-write-an-inputstream-to-a-file-in-scala
     // todo extract method
+
 
     val io = new ProcessIO(
       stdin => None,
@@ -59,7 +66,11 @@ object Bash {
         if (showOutput) {
           out = mkMonitor(scala.io.Source.fromInputStream(stdout).bufferedReader())
         } else {
-          out = scala.io.Source.fromInputStream(stdout).mkString
+          if (redirectStdout != null) {
+            Files.copy(stdout, redirectStdout.delete(true).path)
+          } else {
+            out = scala.io.Source.fromInputStream(stdout).mkString
+          }
         }
 
         stdout.close()
@@ -68,6 +79,12 @@ object Bash {
         if (showOutput) {
           err = mkMonitor(scala.io.Source.fromInputStream(stderr).bufferedReader())
         } else {
+          if (redirectStderr != null) {
+            Files.copy(stderr, redirectStderr.delete(true).path)
+          } else {
+            err = scala.io.Source.fromInputStream(stderr).mkString
+          }
+
           err = scala.io.Source.fromInputStream(stderr).mkString
         }
 
