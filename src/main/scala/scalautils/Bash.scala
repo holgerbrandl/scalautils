@@ -45,7 +45,7 @@ object Bash {
   // http://stackoverflow.com/questions/5221524/idiomatic-way-to-convert-an-inputstream-to-a-string-in-scala
   // todo add argument to disable stderr/stdout recording (to prevent memory problems)
   // tooo refactor away mode
-  def eval(script: String, showOutput: Boolean = false, redirectStdout: File = null, redirectStderr: File = null): BashResult = {
+  def eval(script: String, showOutput: Boolean = false, redirectStdout: File = null, redirectStderr: File = null, wd: File = File(".")): BashResult = {
 
     //    if (mode.beVerbose) println("script:\n" + script.trim)
 
@@ -55,6 +55,11 @@ object Bash {
 
     var err = ""
     var out = ""
+
+    // optionally prefix script with working directory change
+    val scriptInDir = if (File(".") != wd) {
+      s"cd '${wd.fullPath}'\n" + script
+    } else script
 
     //    http://stackoverflow.com/questions/2782638/is-there-a-nice-safe-quick-way-to-write-an-inputstream-to-a-file-in-scala
     // todo extract method
@@ -93,7 +98,7 @@ object Bash {
     //      return null
 
     //    BashResult(f"$script".run(io).exitValue(), out, err)
-    BashResult(Seq("/bin/bash", "-c", s"$script").run(io).exitValue(), out.split("\n"), err.split("\n"))
+    BashResult(Seq("/bin/bash", "-c", s"$scriptInDir").run(io).exitValue(), out.split("\n"), err.split("\n"))
   }
 
 
