@@ -20,6 +20,7 @@ package object FastaUtils {
     // inspired from see https://github.com/agjacome/funpep
     lazy val toEntryString: String = ">" + id + " " + description.getOrElse("") + "\n" + sequence.grouped(70).mkString("\n") + "\n"
 
+
     // also interesting
     // see http://stackoverflow.com/questions/10530102/java-parse-string-and-add-line-break-every-100-characters
   }
@@ -79,6 +80,7 @@ package object FastaUtils {
 
 
   def writeFasta(fastaRecords: Iterable[FastaRecord], outputFile: File): Unit = {
+    IOUtils.saveAs(outputFile.toJava) { p => fastaRecords.foreach(record => p.append(record.toEntryString)) }
     IOUtils.saveAs(outputFile.toJava) { p => fastaRecords.foreach(record => p.append(record.toEntryString)) }
   }
 

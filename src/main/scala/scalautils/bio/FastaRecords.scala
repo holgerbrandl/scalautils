@@ -19,8 +19,9 @@ object fasta {
   implicit class ImplFastaTools(records: FastaRecords) {
 
 
-    // tbd how to prevent that the iterator progresses when using it
+    // how to prevent that the iterator progresses when using it --> use iterable
 
+    // http://stackoverflow.com/questions/19804928/scala-writing-string-iterator-to-file-in-efficient-way
     def write(outputFile: File) = writeFasta(records, outputFile)
 
 
