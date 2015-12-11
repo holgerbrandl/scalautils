@@ -9,7 +9,3 @@ libraryDependencies += "com.github.pathikrit" %% "better-files" % "2.13.0"
 
 libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.4" % "test"
 
-// use custom ammonite build on macos
-libraryDependencies += "com.lihaoyi" % "ammonite-repl" % "0.5.1" % "test" cross CrossVersion.full
-initialCommands in(Test, console) := """ammonite.repl.Main.run("")"""
-
