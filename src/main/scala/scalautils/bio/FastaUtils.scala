@@ -81,7 +81,6 @@ package object FastaUtils {
 
   def writeFasta(fastaRecords: Iterable[FastaRecord], outputFile: File): Unit = {
     IOUtils.saveAs(outputFile.toJava) { p => fastaRecords.foreach(record => p.append(record.toEntryString)) }
-    IOUtils.saveAs(outputFile.toJava) { p => fastaRecords.foreach(record => p.append(record.toEntryString)) }
   }
 
 
@@ -178,7 +177,6 @@ class FastaReadException(string: String) extends Exception(string)
 //
 //
 //      def hasNext = lines.hasNext
-//
 //
 //      def next = {
 //        val header(name, annotation) = lines.next
