@@ -58,7 +58,7 @@ object Bash {
 
     // optionally prefix script with working directory change
     val scriptInDir = if (File(".") != wd) {
-      s"cd '${wd.fullPath}'\n" + script
+      s"cd '${wd.path.toAbsolutePath}'\n" + script
     } else script
 
     //    http://stackoverflow.com/questions/2782638/is-there-a-nice-safe-quick-way-to-write-an-inputstream-to-a-file-in-scala

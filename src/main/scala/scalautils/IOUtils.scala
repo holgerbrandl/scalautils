@@ -45,10 +45,10 @@ object IOUtils {
 
     implicit class FileApiImplicits(file: better.files.File) {
 
-      def head = s"head ${file.fullPath}" !
+      def head = s"head ${file}" !
 
 
-      def withExt(extension: String) = better.files.File(file.fullPath + extension)
+      def withExt(extension: String) = better.files.File(file + extension)
     }
   }
 }

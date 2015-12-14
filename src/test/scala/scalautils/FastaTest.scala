@@ -1,6 +1,7 @@
 package scalautils
 
-import better.files._
+import better.files.File
+import better.files.File._
 import org.scalatest.{FlatSpec, Matchers}
 
 import scalautils.FastaUtils._
@@ -10,7 +11,6 @@ class FastaTest extends FlatSpec with Matchers {
   // see http://www.scalatest.org/user_guide/using_matchers#greaterAndLessThan
 
   it should "create some fasta chunks from a source fasta " in {
-
 
     val wd = (home / "unit_tests").createIfNotExists(true)
 

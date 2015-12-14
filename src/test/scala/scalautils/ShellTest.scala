@@ -1,6 +1,6 @@
 package scalautils
 
-import better.files._
+import better.files.File._
 import org.scalatest.{FlatSpec, Matchers}
 
 import scalautils.StringUtils.ImplStringUtils

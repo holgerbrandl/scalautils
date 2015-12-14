@@ -18,7 +18,7 @@ package object r {
     val reportFileName = reportName.replaceAll("[/ ]", "_")
     require(ShellUtils.isInPath("rend.R"), "rend.R is not installed. See https://github.com/holgerbrandl/datautils/tree/master/R/rendr")
 
-    val tempDir = File.newTempDir(prefix = "rsnip_")
+    val tempDir = File.newTemporaryDirectory(prefix = "rsnip_")
 
     val tmpR = tempDir / (reportFileName + ".R")
 

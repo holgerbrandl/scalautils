@@ -2,6 +2,7 @@ package scalautils.benchmarks
 
 import java.text.DecimalFormat
 
+import better.files.File._
 import better.files._
 
 import scalautils.FastaUtils._
@@ -27,12 +28,12 @@ object FastaBenchmarking extends App {
   }
 
   time("write_fasta") {
-    fastaRecords.write(File.newTemp("fastaTest").delete())
+    fastaRecords.write(newTemporaryFile("fastaTest").delete())
   }
 
 
   time("write_fasta_again") {
-    fastaRecords.write(File.newTemp("fastaTest").delete())
+    fastaRecords.write(newTemporaryFile("fastaTest").delete())
   }
 
   time("shuffle_fasta") {

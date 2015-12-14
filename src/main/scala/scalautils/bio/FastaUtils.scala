@@ -91,14 +91,14 @@ package object FastaUtils {
 
 
   def openFasta(fastaFile: File) = {
-    //    new FastaReader(fastaFile.fullPath)
-    new BufferedFastaReader(fastaFile.fullPath).toIterable
+    //    new FastaReader(fastaFile.pathAsString)
+    new BufferedFastaReader(fastaFile).toIterable
   }
 
 
-  private class BufferedFastaReader(val filename: String) extends Iterator[FastaRecord] {
+  private class BufferedFastaReader(val file: File) extends Iterator[FastaRecord] {
 
-    private val fileIt = io.Source.fromFile(filename).getLines().filterNot(_.isEmpty).buffered
+    private val fileIt = io.Source.fromFile(file.toJava).getLines().filterNot(_.isEmpty).buffered
 
 
     def hasNext() = fileIt.hasNext
