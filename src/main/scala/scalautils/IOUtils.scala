@@ -20,6 +20,7 @@ object IOUtils {
 
   def saveAs(file: better.files.File): ((PrintWriter) => Unit) => Unit = saveAs(file.toJava)
 
+
   // see http://stackoverflow.com/questions/4604237/how-to-write-to-a-file-in-scala
   //  http://stackoverflow.com/questions/6879427/scala-write-string-to-file-in-one-statement
   // similar http://jesseeichar.github.io/scala-io-doc/0.2.0/index.html#!/core/multiple_writes_single_connection
@@ -49,8 +50,13 @@ object IOUtils {
 
 
       def withExt(extension: String) = better.files.File(file + extension)
+
+
+      def replaceExt(oldExtension: String, extension: String) = better.files.File(file.pathAsString.replace(oldExtension, extension))
     }
+
   }
+
 }
 
 

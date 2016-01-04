@@ -7,12 +7,13 @@ import scalautils.FastaUtils
 import scalautils.FastaUtils._
 
 /**
-  * A collection of fasta records along with various tools to manipulate them
+  * A collection of fasta records along with various tools to manipulate them.
   *
   * @author Holger Brandl
   */
 
 object fasta {
+
   // http://stackoverflow.com/questions/11302270/what-is-the-relation-between-iterable-and-iterator
   type FastaRecords = Iterable[FastaRecord]
 
@@ -47,9 +48,13 @@ object fasta {
 
 }
 
+
 object FastaRecords {
 
-  def fromFile(fastaFile: File) = openFasta(fastaFile)
+  def fromFile(fastaFile: String): Iterable[FastaRecord] = fromFile(File(fastaFile))
+
+
+  def fromFile(fastaFile: File): Iterable[FastaRecord] = openFasta(fastaFile)
 
 
   def fromChunks(fastaFiles: Seq[File]) = {

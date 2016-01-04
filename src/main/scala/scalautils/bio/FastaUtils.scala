@@ -18,7 +18,7 @@ package object FastaUtils {
   case class FastaRecord(id: String, description: Option[String] = None, sequence: String) {
 
     // inspired from see https://github.com/agjacome/funpep
-    lazy val toEntryString: String = ">" + id + " " + description.getOrElse("") + "\n" + sequence.grouped(70).mkString("\n") + "\n"
+    lazy val toEntryString: String = (">" + id + " " + description.getOrElse("")).trim + "\n" + sequence.grouped(70).mkString("\n") + "\n"
 
 
     // also interesting
@@ -90,7 +90,10 @@ package object FastaUtils {
   }
 
 
-  def openFasta(fastaFile: File) = {
+  def openFasta(fastaFile: String): Iterable[FastaRecord] = openFasta(File(fastaFile))
+
+
+  def openFasta(fastaFile: File): Iterable[FastaRecord] = {
     //    new FastaReader(fastaFile.pathAsString)
     new BufferedFastaReader(fastaFile).toIterable
   }
