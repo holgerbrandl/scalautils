@@ -9,3 +9,4 @@ libraryDependencies += "com.github.pathikrit" %% "better-files" % "2.14.0"
 
 libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.4" % "test"
 
+publishTo := Some(Resolver.file("file",  new File(Path.userHome.absolutePath+"/.m2/repository")))
