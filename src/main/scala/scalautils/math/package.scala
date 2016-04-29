@@ -17,6 +17,13 @@ package object math {
       val (lower, upper) = values.sorted.splitAt(values.size / 2)
       if (values.size % 2 == 0) (lower.last + upper.head) / 2.0 else upper.head
     }
+
+    def quantile(quantile:Double) = {
+      assert(quantile >=0 && quantile <=1)
+      // convert quantile into and index
+      val quantIndex = (values.length.toDouble*quantile).round.toInt -1
+      values.sorted.get(quantIndex)
+    }
   }
 
 }
