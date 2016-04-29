@@ -21,8 +21,8 @@ package object math {
     def quantile(quantile:Double) = {
       assert(quantile >=0 && quantile <=1)
       // convert quantile into and index
-      val quantIndex = (values.length.toDouble*quantile).round.toInt -1
-      values.sorted.get(quantIndex)
+      val quantIndex: Int = (values.length.toDouble*quantile).round.toInt -1
+      values.sorted.toList(quantIndex)
     }
   }
 
