@@ -24,7 +24,7 @@ package object r {
 
     tmpR.write(rSnippet)
 
-    Bash.eval(s"""cd "${wd.path}"; rend.R ${if (showCode) "-E" else ""} "${tmpR.path}" $args""")
+    Bash.eval(s"""cd "${wd.path}"; rend.R ${if (showCode) "" else "-e"} "${tmpR.path}" $args""")
 
     // todo convert result into status code
     wd / (reportFileName + ".html")
