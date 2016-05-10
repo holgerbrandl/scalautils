@@ -15,6 +15,7 @@ class FastaTest extends FlatSpec with Matchers {
     val wd = (home / "unit_tests").createIfNotExists(true)
 
     // clean up previous chunks
+    // fixme wont work with links, see  https://github.com/pathikrit/better-files/pull/72
     wd.glob("**/test_chunk*").foreach(_.delete())
 
     // val testFasta = File("/projects/plantx/on_plantx/dd_Jani_v4/dd_Jani_v4.dircor.fasta").copyTo(wd/"some_seqs.fasta")
